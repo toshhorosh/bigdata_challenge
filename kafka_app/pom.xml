@@ -32,6 +32,13 @@
             <version>1.18.0</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
             <artifactId>scala-logging_${scala.compat.version}</artifactId>
             <version>3.9.4</version>

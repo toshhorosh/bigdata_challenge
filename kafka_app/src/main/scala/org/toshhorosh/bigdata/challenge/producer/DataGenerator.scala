@@ -1,8 +1,11 @@
 package org.toshhorosh.bigdata.challenge.producer
 
-import org.toshhorosh.bigdata.challenge.data.Record
+import org.toshhorosh.bigdata.challenge.data.ViewLogRecord
 
-class DataGenerator extends Function1[Int, Vector[Record]] {
+object DataGenerator extends ((Int) => LazyList[ViewLogRecord]) {
 
-  override def apply(limit: Int): Vector[Record] = ???
+  override def apply(limit: Int): LazyList[ViewLogRecord] = {
+
+    LazyList.fill[ViewLogRecord](limit)(ViewLogRecord())
+  }
 }
