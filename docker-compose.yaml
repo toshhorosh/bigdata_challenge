@@ -1,0 +1,73 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:${TAG:?error}
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: confluentinc/cp-kafka:${TAG:?error}
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://kafka:19091, EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:19091, EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_BROKER_RACK: rack-0
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+
+  init-kafka:
+    image: confluentinc/cp-kafka:${TAG:?error}
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka:19091 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka:19091 --create --if-not-exists \\
+      --topic ${TOPIC_NAME} --replication-factor 1 --partitions 1 --config retention.ms=180000
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:19091 --list
+      "
+  producer:
+    build:
+      context: .
+      args:
+        IMAGE_VERSION: ${APPLICATION_VERSION}
+    image: challenge/kafka_app:${APPLICATION_VERSION:?error}
+    container_name: kafka_producer
+    depends_on:
+      - init-kafka
+    environment:
+      JAVA_OPTS: "-Xmx512M -XX:+ExitOnOutOfMemoryError"
+      ARGS: "producer"
+      RECORDS_LIMIT: 10000
+      BOOTSTRAP_SERVERS: "localhost:9092,kafka:19091"
+      TOPIC_NAME: ${TOPIC_NAME}
+
+  consumer:
+    image: challenge/kafka_app:${APPLICATION_VERSION:?error}
+    container_name: kafka_consumer
+    depends_on:
+      - producer
+    environment:
+      JAVA_OPTS: "-Xmx512M -XX:+ExitOnOutOfMemoryError"
+      ARGS: "consumer"
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      TOPIC_NAME: ${TOPIC_NAME}

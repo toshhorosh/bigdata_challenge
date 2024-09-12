@@ -1,8 +1,7 @@
-package org.toshhorosh.bigdata.challenge
+package org.toshhorosh.bigdata.challenge.producer
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.toshhorosh.bigdata.challenge.data.ViewLogRecord
-import org.toshhorosh.bigdata.challenge.producer.DataGenerator
 
 class DataGeneratorSpec extends AnyFlatSpec {
 

@@ -1,24 +1,24 @@
 package org.toshhorosh.bigdata.challenge
 
 import com.typesafe.config.{Config, ConfigFactory}
-import org.toshhorosh.bigdata.challenge.InstanceType.{Consumer, Producer, Transformer}
+import com.typesafe.scalalogging.LazyLogging
+import org.toshhorosh.bigdata.challenge.InstanceType.{Consumer, Producer}
 import org.toshhorosh.bigdata.challenge.consumer.ConsumerAppInstance
 import org.toshhorosh.bigdata.challenge.producer.ProducerAppInstance
-import org.toshhorosh.bigdata.challenge.transformer.TransformerAppInstance
-
-import com.typesafe.scalalogging.LazyLogging
 
 import scala.util.{Failure, Success, Try}
 
 
 object Main extends App with LazyLogging {
 
-  require(args.length == 1, "Java argument should be provided: producer, transformer, consumer")
+  require(args.length == 1, "Java argument should be provided. " +
+    "Possible values: producer, consumer")
 
   Try {
     val instanceType = InstanceType(args.head)
     val config = configResolver(instanceType)
 
+    logger.info(s"Starting an instance of $instanceType")
     appResolver(instanceType).run(config)
 
   } match {
@@ -31,8 +31,6 @@ object Main extends App with LazyLogging {
     appType match {
       case Producer =>
         ProducerAppInstance
-      case Transformer =>
-        TransformerAppInstance
       case Consumer =>
         ConsumerAppInstance
     }

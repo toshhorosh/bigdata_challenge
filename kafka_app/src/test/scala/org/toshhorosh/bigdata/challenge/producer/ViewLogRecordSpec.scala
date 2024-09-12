@@ -1,9 +1,7 @@
-package org.toshhorosh.bigdata.challenge
+package org.toshhorosh.bigdata.challenge.producer
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.toshhorosh.bigdata.challenge.data.ViewLogRecord
-
-import java.util.UUID
 
 class ViewLogRecordSpec extends AnyFlatSpec {
 
