@@ -33,17 +33,6 @@
             <version>1.18.0</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>3.8.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.circe</groupId>
             <artifactId>circe-core_${scala.compat.version}</artifactId>
             <version>${circe.version}</version>
@@ -57,6 +46,49 @@
             <groupId>com.nequissimus</groupId>
             <artifactId>circe-kafka_${scala.compat.version}</artifactId>
             <version>3.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.kafka</groupId>
+                    <artifactId>kafka-clients</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.compat.version}</artifactId>
+            <version>3.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-slf4j2-impl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.compat.version}</artifactId>
+            <version>3.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql-kafka-0-10_${scala.compat.version}</artifactId>
+            <version>3.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Logging -->
@@ -127,6 +159,10 @@
                     <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                     <environmentVariables>
                         <TEST-ENV>99</TEST-ENV>
+                        <SPARK_MASTER>local</SPARK_MASTER>
+                        <TOPIC_NAME>test</TOPIC_NAME>
+                        <BOOTSTRAP_SERVERS>localhost:9092</BOOTSTRAP_SERVERS>
+                        <RECORDS_LIMIT>100</RECORDS_LIMIT>
                     </environmentVariables>
                 </configuration>
                 <executions>

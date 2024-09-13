@@ -46,6 +46,7 @@ services:
       kafka-topics --bootstrap-server kafka:19091 --list
       "
   producer:
+    platform: linux/x86_64
     build:
       context: .
       args:
@@ -53,21 +54,35 @@ services:
     image: challenge/kafka_app:${APPLICATION_VERSION:?error}
     container_name: kafka_producer
     depends_on:
+      - kafka
       - init-kafka
     environment:
-      JAVA_OPTS: "-Xmx512M -XX:+ExitOnOutOfMemoryError"
+      JAVA_OPTS: "-Xmx256m -XX:+ExitOnOutOfMemoryError"
       ARGS: "producer"
       RECORDS_LIMIT: 10000
       BOOTSTRAP_SERVERS: "localhost:9092,kafka:19091"
       TOPIC_NAME: ${TOPIC_NAME}
 
   consumer:
+    platform: linux/x86_64
+    build:
+      context: .
+      args:
+        IMAGE_VERSION: ${APPLICATION_VERSION}
     image: challenge/kafka_app:${APPLICATION_VERSION:?error}
     container_name: kafka_consumer
     depends_on:
-      - producer
+      - init-kafka
+      - kafka
+    volumes:
+      - ./jars:/jars
+      - ./data:/data
     environment:
-      JAVA_OPTS: "-Xmx512M -XX:+ExitOnOutOfMemoryError"
+      JAVA_OPTS: >
+        -Xmx1500m 
+        -XX:+ExitOnOutOfMemoryError 
+        -Dspark.app.name=ViewLogKafkaConsumer 
+        -Dspark.master=local[4]
       ARGS: "consumer"
-      BOOTSTRAP_SERVERS: "kafka:9092"
+      BOOTSTRAP_SERVERS: "localhost:9092,kafka:19091"
       TOPIC_NAME: ${TOPIC_NAME}

@@ -2,7 +2,6 @@ package org.toshhorosh.bigdata.challenge
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.toshhorosh.bigdata.challenge.InstanceType.{Consumer, Producer}
-import org.toshhorosh.bigdata.challenge.Main.{appResolver, configResolver}
 import org.toshhorosh.bigdata.challenge.consumer.ConsumerAppInstance
 import org.toshhorosh.bigdata.challenge.producer.ProducerAppInstance
 
